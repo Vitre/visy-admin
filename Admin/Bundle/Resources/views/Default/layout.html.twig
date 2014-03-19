@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html>
+
+    <head>
+        <meta charset="UTF-8"/>
+        <title>{% block title %}Visy Admin{% endblock %}</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        {#
+        <link rel="icon" type="image/x-icon" href="{{ asset('favicon.ico') }}" />
+        #}
+        {% block css %}
+            {% if app.environment == 'dev' %}
+                <link href="/@/css/admin/screen.css" type="text/css" rel="stylesheet"/>
+            {% else %}
+                {% stylesheets
+                '@VisyVisyAdminBundle/Resources/public/scss/screen.scss'
+                output='/@/css/admin/screen.css' %}
+                <link href="{{ asset_url }}" type="text/css" rel="stylesheet"/>
+                {% endstylesheets %}
+            {% endif %}
+        {% endblock %}
+
+        {% block head_js %}{% endblock %}
+
+        {% block head %}{% endblock %}
+
+    </head>
+
+    <body>
+
+        {% block body %}
+
+            <div>
+
+                <nav id="nav">
+
+                    <div id="user">
+                        <a href="{{ url('fos_user_security_logout') }}">Logout</a>
+                    </div>
+
+                    <div id="menu">
+                        {% block nav %}
+                            {{ knp_menu_render('VisyVisyAdminBundle:Builder:mainMenu') }}
+                        {% endblock %}
+                    </div>
+                </nav>
+
+                {% set flashMessages = app.session.flashbag.all() %}
+                {% if flashMessages is not empty %}
+                    <div id="flash">
+                        {% for type, messages in flashMessages %}
+                            {% for message in messages %}
+                                <div class="alert alert-{{ type }}" data-type="{{ type }}">
+                                    {{ message }}
+                                    <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+                                </div>
+                            {% endfor %}
+                        {% endfor %}
+                    </div>
+                {% endif %}
+
+                {% block stream %}
+                    {# <div id="stream"></div> #}
+                {% endblock %}
+
+            </div>
+
+        {% endblock %}
+
+        {% block body_js %}{% endblock %}
+
+    </body>
+
+</html>

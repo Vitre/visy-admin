@@ -1,0 +1,13 @@
+#flash {
+    position: relative;
+    padding: 20px $stream-margin-v;
+    //height: $flash-height;
+    //line-height: $flash-height;
+    //text-align: center;
+    //font-weight: bold;
+    background: #FFFFFF;
+
+    > div:last-child {
+        margin-bottom: 0;
+    }
+}

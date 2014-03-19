@@ -1,0 +1,9 @@
+parameters:
+#    visy_visy_admin.example.class: Visy\Visy\Admin\Bundle\Example
+
+services:
+    visy_visy_admin.core:
+        class: Visy\Visy\Admin\Bundle\DependencyInjection\Core
+        arguments: [@service_container, @security.context, @session]
+        tags:
+            - { name: kernel.event_listener, event: kernel.controller, method: onKernelController }

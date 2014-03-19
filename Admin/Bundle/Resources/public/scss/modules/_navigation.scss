@@ -1,0 +1,46 @@
+#nav {
+    position: fixed;
+    top: 0; left: 0; bottom: 0;
+    width: $nav-width;
+    background: $nav-background-color;
+    color: #E6E6E6;
+}
+
+#menu {
+    margin: $nav-space-h 0;
+
+    a {
+        display: block;
+        color: darken(#FFFFFF, 25%);
+        text-decoration: none;
+
+        &:hover {
+            color: #FFFFFF;
+        }
+    }
+    ul {
+        list-style: none;
+        margin: 0; padding: 0;
+
+        li {
+            margin: 0;
+            padding: 1em $nav-space-v;
+            border-bottom: 1px dotted lighten($nav-background-color, 15%);
+
+            &.active {
+                background-color: lighten($nav-background-color, 5%);
+            }
+        }
+    }
+
+    > ul {
+        > li {
+            text-transform: uppercase;
+        }
+    }
+}
+
+#user {
+    padding: 10px $nav-space-v;
+    border-bottom: 1px solid lighten($nav-background-color, 10%);
+}

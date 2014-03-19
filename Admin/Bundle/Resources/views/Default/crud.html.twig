@@ -1,0 +1,63 @@
+{% extends 'VisyVisyAdminBundle:Default:layout.html.twig' %}
+
+{% block css %}
+    {{ parent() }}
+
+    {% if app.environment == 'dev' %}
+        <link href="/@/css/admin/bootstrap.css" type="text/css" rel="stylesheet"/>
+    {% else %}
+        {% stylesheets
+        '@VisyVisyAdminBundle/Resources/public/scss/bootstrap.scss'
+        output='/@/css/admin/bootstrap.css' %}
+        <link href="{{ asset_url }}" type="text/css" rel="stylesheet"/>
+        {% endstylesheets %}
+    {% endif %}
+
+{% endblock %}
+
+
+{% block stream %}
+<div id="stream">
+
+    <header id="header">
+        {% block header %}{# <h1>CRUD</h1> #}{% endblock %}
+    </header>
+
+    {% block breadcrumb %}{# <nav id="breadcrumb"></nav> #}{% endblock %}
+
+    {% block toolbar %}{# <div id="toolbar"></div> #}{% endblock %}
+
+    <main id="main">
+        {% block content %}{% endblock %}
+    </main>
+
+    {% block pagination %}{# <nav id="pagination"></nav> #}{% endblock %}
+
+    <footer id="footer">
+        {% block footer %}{% endblock %}
+    </footer>
+
+</div>
+{% endblock %}
+
+{% block body_js %}
+
+    {% javascripts
+    '@VisyVisyAdminBundle/Resources/public/js/jquery.js'
+    '@VisyVisyAdminBundle/Resources/public/js/bootstrap/affix.js'
+    '@VisyVisyAdminBundle/Resources/public/js/bootstrap/alert.js'
+    '@VisyVisyAdminBundle/Resources/public/js/bootstrap/button.js'
+    '@VisyVisyAdminBundle/Resources/public/js/bootstrap/carousel.js'
+    '@VisyVisyAdminBundle/Resources/public/js/bootstrap/collapse.js'
+    '@VisyVisyAdminBundle/Resources/public/js/bootstrap/dropdown.js'
+    '@VisyVisyAdminBundle/Resources/public/js/bootstrap/tab.js'
+    '@VisyVisyAdminBundle/Resources/public/js/bootstrap/transition.js'
+    '@VisyVisyAdminBundle/Resources/public/js/bootstrap/scrollspy.js'
+    '@VisyVisyAdminBundle/Resources/public/js/bootstrap/modal.js'
+    '@VisyVisyAdminBundle/Resources/public/js/bootstrap/tooltip.js'
+    '@VisyVisyAdminBundle/Resources/public/js/bootstrap/popover.js'
+    output='/@/js/admin/vendors.js' filter='?yui_js' filter='cssrewrite' %}
+    <script src="{{ asset_url }}"></script>
+    {% endjavascripts %}
+
+{% endblock %}

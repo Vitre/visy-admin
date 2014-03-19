@@ -1,0 +1,12 @@
+#header {
+    padding: 0 0 0 0;
+    height: $header-height;
+
+    h1 {
+        margin: 0;
+        padding: 0 $stream-margin-v;
+        line-height: $header-height;
+        font-size: $header-height * 0.5;
+        color: lighten(#000000, 25%)
+    }
+}
