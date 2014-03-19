@@ -1,0 +1,19 @@
+{
+    "name": "visy/admin-bundle",
+    "type": "library",
+    "description": "Visy admin bundle",
+    "keywords": ["symfony","symfony2"],
+    "homepage": "https://github.com/Vitre/visy-admin-bundle",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Vít Mádr",
+            "email": "vit.madr@gmail.com",
+            "homepage": "https://github.com/Vitre",
+            "role": "Developer"
+        }
+    ],
+    "require": {
+        "php": ">=5.4.0"
+    }
+}
