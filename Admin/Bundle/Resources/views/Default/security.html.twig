@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html>
+
+    <head>
+        <meta charset="UTF-8"/>
+        <title>{% block title %}Visy Admin Security{% endblock %}</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        {#
+        <link rel="icon" type="image/x-icon" href="{{ asset('favicon.ico') }}" />
+        #}
+        {% block css %}
+            {% if app.environment == 'dev' %}
+                <link href="/@/css/admin/bootstrap.css" type="text/css" rel="stylesheet"/>
+                <link href="/@/css/admin/screen.css" type="text/css" rel="stylesheet"/>
+            {% else %}
+
+                {% stylesheets
+                '@VisyVisyAdminBundle/Resources/public/scss/bootstrap.scss'
+                output='/@/css/admin/bootstrap.css' %}
+                <link href="{{ asset_url }}" type="text/css" rel="stylesheet"/>
+                {% endstylesheets %}
+
+                {% stylesheets
+                '@VisyVisyAdminBundle/Resources/public/scss/screen.scss'
+                output='/@/css/admin/screen.css' %}
+                <link href="{{ asset_url }}" type="text/css" rel="stylesheet"/>
+                {% endstylesheets %}
+            {% endif %}
+        {% endblock %}
+
+        {% block head_js %}{% endblock %}
+
+        {% block head %}{% endblock %}
+
+    </head>
+
+    <body class="{{ app.request.locale }} security{% block body_class %} {% endblock %}">
+
+        {% block body %}
+
+            <div>
+
+                {% block header %}{% endblock %}
+
+                {% block stream %}
+                    {% block main %}{% endblock %}
+                {% endblock %}
+
+            </div>
+
+        {% endblock %}
+
+        {% block body_js %}
+
+            {% javascripts
+            '@VisyVisyAdminBundle/Resources/public/js/jquery.js'
+            '@VisyVisyAdminBundle/Resources/public/js/bootstrap/affix.js'
+            '@VisyVisyAdminBundle/Resources/public/js/bootstrap/alert.js'
+            '@VisyVisyAdminBundle/Resources/public/js/bootstrap/button.js'
+            '@VisyVisyAdminBundle/Resources/public/js/bootstrap/carousel.js'
+            '@VisyVisyAdminBundle/Resources/public/js/bootstrap/collapse.js'
+            '@VisyVisyAdminBundle/Resources/public/js/bootstrap/dropdown.js'
+            '@VisyVisyAdminBundle/Resources/public/js/bootstrap/tab.js'
+            '@VisyVisyAdminBundle/Resources/public/js/bootstrap/transition.js'
+            '@VisyVisyAdminBundle/Resources/public/js/bootstrap/scrollspy.js'
+            '@VisyVisyAdminBundle/Resources/public/js/bootstrap/modal.js'
+            '@VisyVisyAdminBundle/Resources/public/js/bootstrap/tooltip.js'
+            '@VisyVisyAdminBundle/Resources/public/js/bootstrap/popover.js'
+            output='/@/js/admin/vendors.js' filter='?yui_js' filter='cssrewrite' %}
+            <script src="{{ asset_url }}"></script>
+            {% endjavascripts %}
+
+        {% endblock %}
+
+    </body>
+
+</html>

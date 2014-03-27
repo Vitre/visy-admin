@@ -1,0 +1,21 @@
+{% extends 'VisyVisyAdminBundle:Default:crud.html.twig' %}
+
+{% block header %}
+    <h1>Nový projekt</h1>
+{% endblock %}
+
+{% block toolbar %}
+    <div id="toolbar">
+        <a class="btn btn-default" href="{{ path(crud_index_route) }}">
+            <span class="glyphicon glyphicon-arrow-left"></span> Zpět
+        </a>
+    </div>
+{% endblock %}
+
+{% block content %}
+
+    <div id="form">
+        {{ form(form) }}
+    </div>
+
+{% endblock %}

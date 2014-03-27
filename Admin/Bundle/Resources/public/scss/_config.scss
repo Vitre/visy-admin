@@ -1,3 +1,5 @@
+// Bootstrap
+$brand-primary: #428bca !default;
 
 // Space
 $space-v: 30px;
@@ -17,3 +19,17 @@ $stream-margin-v: $space-v;
 
 // Flash
 $flash-height: 50px;
+
+// Breadcrumbs
+$breadcrumbs-height: 35px;
+
+// Toolbar
+$toolbar-height: 73px;
+
+// Ribbon
+$ribbon-width: 160px;
+$ribbon-background-color: lighten($nav-background-color, 25%);
+
+// Crud
+$crud-submenu-width: 200px;
+$crud-submenu-background-color: darken(#FFFFFF, 5%);

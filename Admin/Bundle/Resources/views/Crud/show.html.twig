@@ -1,0 +1,38 @@
+{% extends 'VisyVisyAdminBundle:Default:crud.html.twig' %}
+
+{% block body_class %}{{ parent() }}{% endblock %}
+
+{% block header %}
+    <h1>{{ entity_title }}</h1>
+{% endblock %}
+
+{% block toolbar %}
+    <div id="toolbar">
+
+        {{ form(delete_form, { id: 'form-delete' }) }}
+
+        <a class="btn btn-default" href="{{ path(crud_index_route) }}">
+            <span class="glyphicon glyphicon-arrow-left"></span> Back
+        </a>
+
+        <a class="btn btn-primary" href="{{ path(crud_edit_route, { 'id': entity.id }) }}">
+            <span class="glyphicon glyphicon glyphicon-pencil"></span> Edit
+        </a>
+
+    </div>
+{% endblock %}
+
+{% block content %}
+    <div id="detail">
+        <table class="table table-bordered">
+            <tbody>
+                {#
+                <tr>
+                    <th>ID</th>
+                    <td>{{ entity.id }}</td>
+                </tr>
+                #}
+            </tbody>
+        </table>
+    </div>
+{% endblock %}

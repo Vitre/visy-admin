@@ -1,0 +1,94 @@
+{% extends 'VisyVisyAdminBundle:Default:crud.html.twig' %}
+
+{% block header %}
+    <h1>{{ title }}</h1>
+{% endblock %}
+
+{% block toolbar %}
+    <div id="toolbar">
+        <a class="btn btn-primary" href="{{ path(crud_new_route) }}">
+            <span class="glyphicon glyphicon-plus-sign"></span> Nový
+        </a>
+    </div>
+{% endblock %}
+
+{% block content %}
+    <table class="table table-striped table-hover">
+
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>Název</th>
+                <th>Autor</th>
+                {#
+                <th>Typ</th>
+                <th>Popis</th>
+                #}
+                <th>Lokalita</th>
+                <th>Hlasů</th>
+                <th>Vytvořeno</th>
+                <th>Změněno</th>
+                <th>Aktivní</th>
+                <th></th>
+            </tr>
+        </thead>
+
+        <tbody>
+            {% for entity in pagination %}
+                <tr>
+                    <td class="pkey">
+                        <a href="{{ path('visy_admin_project_show', { 'id': entity.id }) }}">{{ entity.id }}</a>
+                    </td>
+                    <td class="name">
+                        <strong>{{ entity.name }}</strong>
+                    </td>
+                    {#
+                    <td class="type">
+                        {{ entity.type }}
+                    </td>
+                    #}
+                    <td class="author">
+                        {{ entity.author }}
+                    </td>
+                    {#
+                    <td class="description">
+                        <small>{{ entity.description }}</small>
+                    </td>
+                    #}
+                    <td class="location">
+                        <small>{{ entity.location }}</small>
+                    </td>
+                    <td class="num vote-count">
+                        {{ entity.voteCount }}
+                    </td>
+                    <td class="date create-date">
+                        <small>{% if entity.createDate %}{{ entity.createDate|date('Y-m-d H:i') }}{% endif %}</small>
+                    </td>
+                    <td class="date update-date">
+                        <small>{% if entity.updateDate %}{{ entity.updateDate|date('Y-m-d H:i') }}{% endif %}</small>
+                    </td>
+                    <td class="text-center">
+                        {% if entity.enabled %}ano{% else %}ne{% endif %}
+                    </td>
+                    <td class="actions">
+                        <ul class="actions">
+                            <li>
+                                <a class="btn btn-xs btn-primary action-edit" href="{{ path('visy_admin_project_edit', { 'id': entity.id }) }}">upravit</a>
+                            </li>
+                            <li>
+                                <a class="btn btn-xs action-show" href="{{ path('visy_admin_project_show', { 'id': entity.id }) }}">zobrazit</a>
+                            </li>
+                        </ul>
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+
+    </table>
+{% endblock %}
+
+{% block pagination %}
+    <nav id="pagination">
+        {{ knp_pagination_render(pagination, "", {}, { "prev_label": "Předchozí", "next_label": "Další", "first_label": "První", "last_label": "Poslední"}) }}
+    </nav>
+{% endblock %}
