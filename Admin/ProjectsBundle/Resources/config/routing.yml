@@ -1,9 +1,0 @@
-visy_visy_admin_projects:
-    prefix:  /admin/projects
-    resource: "@VisyVisyAdminProjectsBundle/Controller/ProjectController.php"
-    type: annotation
-
-visy_visy_admin_projects_media:
-    prefix:  /admin/projects
-    resource: "@VisyVisyAdminProjectsBundle/Controller/MediaController.php"
-    type: annotation
