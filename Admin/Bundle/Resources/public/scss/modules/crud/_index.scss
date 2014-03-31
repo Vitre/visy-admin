@@ -1,0 +1,29 @@
+.crud-index {
+
+    #stream {
+        max-width: none;
+    }
+
+    table.table {
+        margin: 0;
+
+        td.actions {
+            width: 11em;
+            text-align: left;
+            white-space: nowrap;
+        }
+
+    }
+
+    .table-empty {
+        $table-empty-height: 100px;
+
+        p.message {
+            margin: 0;
+            line-height: $table-empty-height;
+            text-align: center;
+            font-style: italic;
+        }
+    }
+
+}

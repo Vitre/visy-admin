@@ -1,0 +1,11 @@
+{% trans_default_domain 'visy_admin_crud' %}
+<div class="btn-group actions">
+    <a class="btn btn-xs btn-primary action-edit" href="{{ crud_edit_path(controller, entity) }}">
+        <i class="glyphicon glyphicon-edit"></i>
+        {{ 'list.edit' | trans }}
+    </a>
+    <a class="btn btn-xs btn-default action-show" href="{{ crud_show_path(controller, entity) }}">
+        <i class="glyphicon glyphicon-eye-open"></i>
+        {{ 'list.show' | trans }}
+    </a>
+</div>

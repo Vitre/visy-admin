@@ -10,7 +10,11 @@ class Builder extends ContainerAware
 {
     public function mainMenu(FactoryInterface $factory, array $options)
     {
-        $menu = $factory->createItem('root');
+        $menu = $factory->createItem('root', [
+            'attributes' => [
+                'id' => 'test'
+            ]
+        ]);
 
         $menu->addChild('Home', array('route' => 'visy_admin_homepage'));
 

@@ -1,10 +1,15 @@
+// Vendor
+$vendor-root: "/web/vendor";
+
+// Bootstrap
+$brand-primary: #428bca !default;
 
 // Space
 $space-v: 30px;
-$space-h: 20px;
+$space-h: 30px;
 
 // Header
-$header-height: 60px;
+$header-height: 100px;
 
 // Navigation
 $nav-width: 200px;
@@ -14,6 +19,21 @@ $nav-background-color: #1E1E1E;
 
 // Stream
 $stream-margin-v: $space-v;
+$stream-margin-h: $space-h;
 
 // Flash
 $flash-height: 50px;
+
+// Breadcrumbs
+$breadcrumbs-height: 35px;
+
+// Toolbar
+$toolbar-height: 73px;
+
+// Ribbon
+$ribbon-width: 160px;
+$ribbon-background-color: lighten($nav-background-color, 25%);
+
+// Crud
+$crud-submenu-width: 200px;
+$crud-submenu-background-color: darken(#FFFFFF, 5%);

@@ -1,0 +1,20 @@
+#show {
+    margin: 0;
+    padding: 0;
+
+    table.show {
+        border: 0;
+
+        th {
+            width: 25%;
+            text-align: right;
+        }
+
+        > tbody > tr:first-child {
+            > * {
+                border-top: 0;
+            }
+        }
+    }
+
+}

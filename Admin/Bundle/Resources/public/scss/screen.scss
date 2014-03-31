@@ -2,8 +2,17 @@
 
 //---
 
+@import "bootstrap";
+@import "../../../../../../../../web/vendor/ladda/css/ladda";
+@import "../../../../../../../../web/vendor/ladda/css/ladda-theme";
+
+//---
+
 @import "layout";
 @import "widgets";
+
+@import "crud";
+@import "security";
 
 //---
 

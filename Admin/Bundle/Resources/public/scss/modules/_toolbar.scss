@@ -1,5 +1,8 @@
 #toolbar {
-    padding: 20px $stream-margin-v;
+    margin: 0;
+    padding: $stream-margin-v $stream-margin-h;
+    background: #FFFFFF;
+    border-bottom: 1px solid #eee;
 }
 
 #form-delete {

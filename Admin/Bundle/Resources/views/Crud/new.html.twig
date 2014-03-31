@@ -1,0 +1,23 @@
+{% extends 'VisyVisyAdminBundle:Default:crud.html.twig' %}
+
+{% trans_default_domain 'visy_admin_crud' %}
+
+{% block header %}
+    <h1>{{ 'new.header' | trans }}</h1>
+{% endblock %}
+
+{% block toolbar %}
+    <div id="toolbar" class="btn-toolbar" role="toolbar">
+        <a class="btn btn-default" href="{{ crud_index_path(controller) }}">
+            <span class="glyphicon glyphicon-arrow-left"></span> {{ 'back' | trans }}
+        </a>
+    </div>
+{% endblock %}
+
+{% block content %}
+
+    <div id="form">
+        {{ form(form) }}
+    </div>
+
+{% endblock %}

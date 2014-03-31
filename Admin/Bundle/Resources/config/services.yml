@@ -7,3 +7,15 @@ services:
         arguments: [@service_container, @security.context, @session]
         tags:
             - { name: kernel.event_listener, event: kernel.controller, method: onKernelController }
+
+    visy_visy_admin.crud:
+        class: Visy\Visy\Admin\Bundle\Crud
+        arguments: [@service_container]
+
+    visy_visy_admin.crud_extension:
+        class: Visy\Visy\Admin\Bundle\Twig\CrudExtension
+        arguments: [@service_container]
+        calls:
+            - [setRequest, ["@?request="]]
+        tags:
+            - { name: twig.extension }

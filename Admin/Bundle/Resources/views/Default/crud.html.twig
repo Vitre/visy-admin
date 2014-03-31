@@ -3,60 +3,75 @@
 {% block css %}
     {{ parent() }}
 
-    {% if app.environment == 'dev' %}
-        <link href="/@/css/admin/bootstrap.css" type="text/css" rel="stylesheet"/>
+    {#
+    {% if 1 %}
+        <link href="/css/admin/crud.css" type="text/css" rel="stylesheet"/>
     {% else %}
         {% stylesheets
-        '@VisyVisyAdminBundle/Resources/public/scss/bootstrap.scss'
-        output='/@/css/admin/bootstrap.css' %}
+        '@VisyVisyAdminBundle/Resources/public/scss/crud.scss'
+        output='css/admin/crud.css' %}
         <link href="{{ asset_url }}" type="text/css" rel="stylesheet"/>
         {% endstylesheets %}
     {% endif %}
+    #}
 
 {% endblock %}
 
+{% block body_class %}{{ parent() }}signed crud has-navigation {% if has_breadcrumbs %} has-breadcrumbs{% endif %}{% endblock %}
+
+{% block ribbon %}{% endblock %}
 
 {% block stream %}
-<div id="stream">
+    <div id="stream">
 
-    <header id="header">
-        {% block header %}{# <h1>CRUD</h1> #}{% endblock %}
-    </header>
+        <header class="page-header" id="header">
+            {% block header %}{# <h1>CRUD</h1> #}{% endblock %}
+        </header>
 
-    {% block breadcrumb %}{# <nav id="breadcrumb"></nav> #}{% endblock %}
+        {% block breadcrumb %}
+            {% if has_breadcrumbs and breadcrumbs %}
+                <nav id="breadcrumb">
+                    <ol class="breadcrumb">
+                        {% for crumb in breadcrumbs %}
+                            <li>
+                                {% if crumb.uri and not loop.last -%}
+                                <a href="{{ crumb.uri }}">
+                                    {% endif -%}
+                                    {{ crumb.title }}
+                                    {% if crumb.uri -%}
+                                </a>
+                                {% endif -%}
+                            </li>
+                        {% endfor %}
+                    </ol>
+                </nav>
+            {% endif %}
+        {% endblock %}
 
-    {% block toolbar %}{# <div id="toolbar"></div> #}{% endblock %}
+        {% block toolbar %}{% endblock %}
 
-    <main id="main">
-        {% block content %}{% endblock %}
-    </main>
+        {% block submenu %}{% endblock %}
 
-    {% block pagination %}{# <nav id="pagination"></nav> #}{% endblock %}
+        {% block main %}
+            <main id="main">
+                {% block content %}{% endblock %}
+            </main>
+        {% endblock %}
 
-    <footer id="footer">
-        {% block footer %}{% endblock %}
-    </footer>
+        {% block pagination %}{# <nav id="pagination"></nav> #}{% endblock %}
 
-</div>
+        <footer id="footer">
+            {% block footer %}{% endblock %}
+        </footer>
+
+    </div>
 {% endblock %}
 
 {% block body_js %}
 
     {% javascripts
-    '@VisyVisyAdminBundle/Resources/public/js/jquery.js'
-    '@VisyVisyAdminBundle/Resources/public/js/bootstrap/affix.js'
-    '@VisyVisyAdminBundle/Resources/public/js/bootstrap/alert.js'
-    '@VisyVisyAdminBundle/Resources/public/js/bootstrap/button.js'
-    '@VisyVisyAdminBundle/Resources/public/js/bootstrap/carousel.js'
-    '@VisyVisyAdminBundle/Resources/public/js/bootstrap/collapse.js'
-    '@VisyVisyAdminBundle/Resources/public/js/bootstrap/dropdown.js'
-    '@VisyVisyAdminBundle/Resources/public/js/bootstrap/tab.js'
-    '@VisyVisyAdminBundle/Resources/public/js/bootstrap/transition.js'
-    '@VisyVisyAdminBundle/Resources/public/js/bootstrap/scrollspy.js'
-    '@VisyVisyAdminBundle/Resources/public/js/bootstrap/modal.js'
-    '@VisyVisyAdminBundle/Resources/public/js/bootstrap/tooltip.js'
-    '@VisyVisyAdminBundle/Resources/public/js/bootstrap/popover.js'
-    output='/@/js/admin/vendors.js' filter='?yui_js' filter='cssrewrite' %}
+    '@visy_admin_vendors_js'
+    filter='?yui_js' %}
     <script src="{{ asset_url }}"></script>
     {% endjavascripts %}
 

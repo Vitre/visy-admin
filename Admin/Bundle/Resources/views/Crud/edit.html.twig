@@ -1,0 +1,51 @@
+{% extends 'VisyVisyAdminBundle:Default:crud.html.twig' %}
+
+{% trans_default_domain 'visy_admin_crud' %}
+
+{% block body_class %}{{ parent() }} crud-has-submenu{% endblock %}
+
+{% block ribbon %}
+    {#
+    <div id="ribbon"></div>
+    #}
+{% endblock %}
+
+{% block header %}
+    <h1>{{ entity_title }}</h1>
+{% endblock %}
+
+{% block submenu %}
+    {% if submenu %}
+        <div id="crud-submenu" class="menu submenu">
+            {{ knp_menu_render(submenu, { 'style': 'stacked-pills' }) }}
+        </div>
+    {% endif %}
+{% endblock %}
+
+{% block toolbar %}
+    <div id="toolbar" class="btn-toolbar" role="toolbar">
+
+        {{ form(delete_form, { id: 'form-delete' }) }}
+
+        {#
+        {{  form_start(delete_form) }}
+
+            {{ form_row(delete_form._token) }}
+            {{ form_row(delete_form.submit, { 'label': 'Smazat' }) }}
+
+        {{ form_end(delete_form) }}
+        #}
+
+        <a class="btn btn-default" href="{{ crud_index_path(controller) }}">
+            <span class="glyphicon glyphicon-list"></span> {{ 'list' | trans }}
+        </a>
+    </div>
+{% endblock %}
+
+{% block content %}
+
+    <div id="form">
+        {{ form(edit_form) }}
+    </div>
+
+{% endblock %}

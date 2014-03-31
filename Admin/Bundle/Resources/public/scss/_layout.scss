@@ -9,15 +9,14 @@
 @import "modules/pagination";
 @import "modules/form";
 @import "modules/flash";
-@import "modules/detail";
+@import "modules/ribbon";
+@import "modules/user";
 
 //---
 
 body {
-    padding-left: $nav-width;
+    background: #F2F2F2;
 }
-
-
 
 
 

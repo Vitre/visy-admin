@@ -1,0 +1,44 @@
+body.has-ribbon {
+    padding-left: $nav-width + $ribbon-width;
+}
+
+#ribbon {
+    position: fixed;
+    top: 0; left: $nav-width; bottom: 0;
+    width: $ribbon-width;
+    background: lighten(#000000, 25%);
+
+    .menu {
+
+        a {
+            display: block;
+            color: darken(#FFFFFF, 25%);
+            text-decoration: none;
+
+            &:hover {
+                color: #FFFFFF;
+            }
+        }
+        ul, ol {
+            list-style: none;
+            margin: 0; padding: 0;
+
+            li {
+                margin: 0;
+                padding: 1em $nav-space-v;
+                border-bottom: 1px dotted lighten($ribbon-background-color, 15%);
+
+                &.active {
+                    background-color: lighten($ribbon-background-color, 5%);
+                }
+            }
+        }
+
+        > ul, > ol {
+            > li {
+                text-transform: uppercase;
+            }
+        }
+
+    }
+}

@@ -1,0 +1,41 @@
+{% extends 'VisyVisyAdminBundle:Default:crud.html.twig' %}
+
+{% trans_default_domain 'visy_admin_crud' %}
+
+{% block body_class %}{{ parent() }} crud-index{% endblock %}
+
+{% block header %}
+    <h1>{{ title }}</h1>
+{% endblock %}
+
+{% block toolbar %}
+    <div id="toolbar" class="btn-toolbar" role="toolbar">
+        <a class="btn btn-primary" href="{{ crud_new_path(controller) }}">
+            <span class="glyphicon glyphicon-plus-sign"></span> {{ 'new' | trans }}
+        </a>
+    </div>
+{% endblock %}
+
+{% block content %}
+    {% if pagination.getTotalItemCount %}
+        {% block table %}
+            {{ include('VisVisyAdminBundle:Crud/index:table.html.twig', { 'pagination': pagination }) }}
+        {% endblock %}
+    {% else %}
+        {% block table_empty %}
+            <div class="table-empty">
+                <p class="message">
+                    {{ 'list.no_entries' | trans }}
+                </p>
+            </div>
+        {% endblock %}
+    {% endif %}
+{% endblock %}
+
+{% block pagination %}
+    {% if pagination.getTotalItemCount %}
+        <nav id="pagination">
+            {{ knp_pagination_render(pagination, "", {}, { "prev_label": 'pagination.previous' | trans, "next_label": 'pagination.next' | trans, "first_label": 'pagination.first' | trans, "last_label": 'pagination.last' | trans }) }}
+        </nav>
+    {% endif %}
+{% endblock %}

@@ -1,0 +1,23 @@
+{% trans_default_domain 'visy_admin_crud' %}
+
+<table class="table table-striped table-hover">
+
+    <thead>
+        <tr>
+            <th></th>
+            <th>#</th>
+        </tr>
+    </thead>
+
+    <tbody>
+        {% for entity in pagination %}
+            <tr>
+                <td class="actions">
+                    {{ include('VisyVisyAdminBundle:Crud/index:actions.html.twig', { 'controller': controller, 'entity': entity }) }}
+                </td>
+                {{ include('VisyVisyAdminBundle:Crud/index/fields:pkey.html.twig', { 'controller': controller, 'entity': entity }) }}
+            </tr>
+        {% endfor %}
+    </tbody>
+
+</table>

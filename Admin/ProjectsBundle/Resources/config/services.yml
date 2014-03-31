@@ -1,0 +1,13 @@
+parameters:
+#    visy_visy_admin_projects.example.class: Visy\Visy\Admin\ProjectsBundle\Example
+
+services:
+#    visy_visy_admin_projects.example:
+#        class: %visy_visy_admin_projects.example.class%
+#        arguments: [@service_id, "plain_value", %parameter%]
+
+services:
+    visy_admin_projects.configure_menu_listener:
+        class: Visy\Visy\Admin\ProjectsBundle\EventListener\ConfigureMenuListener
+        tags:
+          - { name: kernel.event_listener, event: visy_admin.menu_configure, method: onMenuConfigure }

@@ -1,6 +1,8 @@
 #header {
     padding: 0 0 0 0;
+    margin: 0;
     height: $header-height;
+    background: #FFFFFF;
 
     h1 {
         margin: 0;
@@ -9,4 +11,5 @@
         font-size: $header-height * 0.5;
         color: lighten(#000000, 25%)
     }
+
 }

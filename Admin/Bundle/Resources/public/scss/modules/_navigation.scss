@@ -1,3 +1,7 @@
+body.has-navigation {
+    padding-left: $nav-width;
+}
+
 #nav {
     position: fixed;
     top: 0; left: 0; bottom: 0;
@@ -21,14 +25,33 @@
     ul {
         list-style: none;
         margin: 0; padding: 0;
+        line-height: 1.5em;
 
         li {
+            $height: 1.5em;
+
+            position: relative;
             margin: 0;
             padding: 1em $nav-space-v;
             border-bottom: 1px dotted lighten($nav-background-color, 15%);
 
-            &.active {
+            &.current {
                 background-color: lighten($nav-background-color, 5%);
+
+                /*
+                &:after {
+                    $size: (1.2 * $height);
+
+                    position: absolute;
+                    top: 0; right: 0;
+                    width: 0;
+                    height: 0;
+                    border-top: $size solid transparent;
+                    border-bottom: $size solid transparent;
+                    border-right: $size solid #FFFFFF;
+                    content: ' ';
+                }
+                */
             }
         }
     }
