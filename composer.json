@@ -15,5 +15,15 @@
     ],
     "require": {
         "php": ">=5.4.0"
+    },
+    "autoload": {
+        "psr-0": { "Visy\\Visy\\AdminBundle": "" }
+    },
+    "target-dir": "visy/Admin/Bundle",
+    "minimum-stability": "alpha",
+    "extra": {
+        "branch-alias": {
+            "dev-master": "master"
+        }
     }
 }
