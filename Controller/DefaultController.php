@@ -2,13 +2,13 @@
 
 namespace Visy\Visy\Admin\Bundle\Controller;
 
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Bundle\FrameworkBundle\Controller\Controller as FrameworkController;
 
 /**
  * Class AbstractController
  * @package Visy\Visy\Admin\Bundle\Controller
  */
-abstract class AbstractController extends Controller
+class DefaultController extends FrameworkController
 {
 
     protected $controllers = [];
@@ -19,15 +19,17 @@ abstract class AbstractController extends Controller
 
     protected $routeBase;
 
+    protected $actionName;
+
+    protected $title = 'untitled';
+
+    protected $parameters = [];
+
+    //---
 
     public function indexAction()
     {
         return $this->render('VisyVisyAdminBundle:Default:index.html.twig', array());
-    }
-
-    public function getTitle()
-    {
-        return 'untitled';
     }
 
     public function hasParent()
@@ -43,6 +45,7 @@ abstract class AbstractController extends Controller
     public function getIndexUrl(array $parameters = [])
     {
         $parameters += $this->getBaseParameters();
+
         return $this->generateUrl($this->getIndexRoute(), $parameters);
     }
 
@@ -68,16 +71,44 @@ abstract class AbstractController extends Controller
 
     public function getName()
     {
-        return get_class($this);
+        return static::staticGetName();
     }
 
-    protected function initAction()
+    public static function staticGetName()
     {
+        return get_called_class();
+    }
+
+    protected function _initAction($actionName)
+    {
+        $this->setActionName($actionName);
         $this->initChildControllers();
+        $this->initParent();
+    }
+
+    protected function initParent()
+    {
     }
 
     protected function initChildControllers()
     {
+    }
+
+    protected function isAction($actionName)
+    {
+        return $this->getActionName() == $actionName;
+    }
+
+    protected function getActionName()
+    {
+        return $this->actionName;
+    }
+
+    protected function setActionName($name)
+    {
+        $this->actionName = $name;
+
+        return $this;
     }
 
     protected function createDefaultScope()
@@ -90,7 +121,7 @@ abstract class AbstractController extends Controller
         return false;
     }
 
-    protected function hasSubmenu()
+    protected function hasSubMenu()
     {
         return false;
     }
@@ -100,13 +131,14 @@ abstract class AbstractController extends Controller
         return false;
     }
 
-    protected function createSubmenu()
+    protected function createSubMenu()
     {
         return false;
     }
 
     protected function getChildController($controller)
     {
+//ld($controller, $this->controllers);
         if (isset($this->controllers[$controller])) {
             return $this->controllers[$controller];
         } else {
@@ -119,12 +151,21 @@ abstract class AbstractController extends Controller
         $controller->setParent($this);
         $controller->setLevel($this->level + 1);
         $controller->setContainer($this->getContainer());
-        $this->controllers[$name] = $controller;
+        $this->setChildController($name, $controller);
+
+        return $controller;
     }
 
     protected function getContainer()
     {
         return $this->container;
+    }
+
+    protected function setChildController($name, $controller)
+    {
+        $this->controllers[$name] = $controller;
+//ld($this->controllers);
+        return $this;
     }
 
     protected function getLevel()
@@ -135,6 +176,7 @@ abstract class AbstractController extends Controller
     protected function setLevel($level)
     {
         $this->level = $level;
+
         return $this;
     }
 
@@ -146,7 +188,63 @@ abstract class AbstractController extends Controller
     protected function setParent($parent)
     {
         $this->parent = $parent;
+
         return $this;
+    }
+
+    protected function getTitle()
+    {
+        return $this->title;
+    }
+
+    protected function setTitle($title)
+    {
+        $this->title = $title;
+
+        return $this;
+    }
+
+    protected function mergeParameters(array $parameters)
+    {
+        $this->parameters += $parameters;
+
+        return $this;
+    }
+
+    public function getParameters()
+    {
+        return $this->parameters;
+    }
+
+    public function join($controller)
+    {
+        $controller->mergeParameters($this->getParameters());
+
+        return $this;
+    }
+
+    protected function getParameter($parameter)
+    {
+        if (isset($this->parameters[$parameter])) {
+            return $this->parameters[$parameter];
+        }
+    }
+
+    protected function setParameter($parameter, $value)
+    {
+        $this->parameters[$parameter] = $value;
+
+        return $this;
+    }
+
+    public function getParentBreadcrumbs()
+    {
+        return [
+            'home' => [
+                'title' => 'Home',
+                'uri'   => $this->generateUrl('visy_admin_homepage')
+            ]
+        ];
     }
 
 }

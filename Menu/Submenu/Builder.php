@@ -1,6 +1,6 @@
 <?php
 
-namespace Visy\Visy\Admin\Bundle\Menu\Submenu;
+namespace Visy\Visy\Admin\Bundle\Menu\SubMenu;
 
 use Visy\Visy\Admin\Bundle\Event\ConfigureMenuEvent;
 use Knp\Menu\FactoryInterface;

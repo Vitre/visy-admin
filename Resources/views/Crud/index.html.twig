@@ -2,10 +2,18 @@
 
 {% trans_default_domain 'visy_admin_crud' %}
 
-{% block body_class %}{{ parent() }} crud-index{% endblock %}
+{% block body_class %}{{ parent() }} crud-index{% if has_sub_menu is not null and has_sub_menu %} crud-has-sub-menu{% endif %}{% if has_sup_menu is not null and has_sup_menu %} crud-has-sup-menu{% endif %}{% endblock %}
 
 {% block header %}
     <h1>{{ title }}</h1>
+{% endblock %}
+
+{% block sup_menu %}
+    {% if sup_menu %}
+        <div class="menu sub_menu crud-sub-menu sup_menu crud-sup-menu">
+            {{ knp_menu_render(sup_menu, { 'style': 'stacked-pills' }) }}
+        </div>
+    {% endif %}
 {% endblock %}
 
 {% block toolbar %}

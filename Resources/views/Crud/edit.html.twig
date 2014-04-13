@@ -2,7 +2,7 @@
 
 {% trans_default_domain 'visy_admin_crud' %}
 
-{% block body_class %}{{ parent() }} crud-has-submenu{% endblock %}
+{% block body_class %}{{ parent() }} crud-edit{% if has_sub_menu is not null and has_sub_menu %} crud-has-sub-menu{% endif %}{% if has_sup_menu is not null and has_sup_menu %} crud-has-sup-menu{% endif %}{% endblock %}
 
 {% block ribbon %}
     {#
@@ -14,10 +14,18 @@
     <h1>{{ entity_title }}</h1>
 {% endblock %}
 
-{% block submenu %}
-    {% if submenu %}
-        <div id="crud-submenu" class="menu submenu">
-            {{ knp_menu_render(submenu, { 'style': 'stacked-pills' }) }}
+{% block sub_menu %}
+    {% if sub_menu %}
+        <div class="menu sub_menu crud-sub-menu">
+            {{ knp_menu_render(sub_menu, { 'style': 'stacked-pills' }) }}
+        </div>
+    {% endif %}
+{% endblock %}
+
+{% block sup_menu %}
+    {% if sup_menu %}
+        <div class="menu sub_menu crud-sub-menu sup_menu crud-sup-menu">
+            {{ knp_menu_render(sup_menu, { 'style': 'stacked-pills' }) }}
         </div>
     {% endif %}
 {% endblock %}

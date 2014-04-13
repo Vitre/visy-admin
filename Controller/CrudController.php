@@ -3,7 +3,6 @@
 namespace Visy\Visy\Admin\Bundle\Controller;
 
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
@@ -14,32 +13,40 @@ use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 /**
  * CRUD controller.
  */
-abstract class AbstractCrudController extends AbstractController
+class CrudController extends DefaultController
 {
 
     protected $limit = 20;
 
     protected $entity;
 
-    public function initAction()
-    {
-        $this->get('visy_visy_admin.crud')->registerController($this);
-        parent::initAction();
-    }
+    protected $entityTitleProperty = 'id';
+
+    /**
+     * @var array
+     * ['name' => '...', 'class' => '...', 'parameter' => '...']
+     */
+    protected $parentEntity;
+
+    protected $em;
 
     /**
      * Lists all entities.
      */
     public function indexAction()
     {
-        $this->initAction();
+        $this->_initAction('index', $this->_getMethodParameters(__FUNCTION__, func_get_args()));
 
-        $em = $this->getDoctrine()->getManager();
+        $this->em = $this->getDoctrine()->getManager();
 
-        $qb = $em->createQueryBuilder();
+        $qb = $this->em->createQueryBuilder();
         $qb->select('entity')
             ->from($this->getEntity(), 'entity')
             ->orderBy('entity.id');
+
+        if ($this->hasParentEntity()) {
+            $this->initIndexParentQuery($qb);
+        }
 
         $paginator = $this->get('knp_paginator');
         $pagination = $paginator->paginate(
@@ -48,10 +55,42 @@ abstract class AbstractCrudController extends AbstractController
             $this->getLimit()
         );
 
+        // PHP console log
+        $this->get('vitre_php_console')->log(
+            $qb->getQuery()->getDQL(),
+            $this->getName()
+        );
+
         return [
             'title'      => $this->getTitle(),
-            'pagination' => $pagination
+            'pagination' => $pagination,
         ] + $this->createDefaultScope();
+    }
+
+    public function _initAction($actionName, $parameters = [])
+    {
+        $this->_initParameters($parameters);
+        $this->get('visy_visy_admin.crud')->registerController($this);
+        parent::_initAction($actionName);
+    }
+
+    protected function _initParameters($parameters)
+    {
+        $this->parameters = $parameters;
+    }
+
+    protected function _getMethodParameters($method, $args)
+    {
+        $r = [];
+        $ref = new \ReflectionMethod(get_called_class(), $method);
+        $params = $ref->getParameters();
+        foreach ($params as $i => $param) {
+            if (isset($args[$i])) {
+                $r[$param->name] = $args[$i];
+            }
+        }
+
+        return $r;
     }
 
     public function getEntity()
@@ -59,14 +98,26 @@ abstract class AbstractCrudController extends AbstractController
         return 'undefined';
     }
 
+    public function hasParentEntity()
+    {
+        return !empty($this->parentEntity);
+    }
+
+    public function initIndexParentQuery($qb)
+    {
+        $qb
+            ->where('entity.' . $this->parentEntity['name'] . ' = :parent')
+            ->setParameter(':parent', $this->getParentParameter());
+    }
+
+    public function getParentParameter()
+    {
+        return $this->getParameter(isset($this->parentEntity['parameter']) ? $this->parentEntity['parameter'] : $this->parentEntity['name']);
+    }
+
     public function getLimit()
     {
         return $this->limit;
-    }
-
-    public function getTitle()
-    {
-        return $this->getEntity();
     }
 
     protected function createDefaultScope()
@@ -80,54 +131,31 @@ abstract class AbstractCrudController extends AbstractController
             'crud_new_route'   => $this->getNewRoute(),
             'crud_edit_route'  => $this->getEditRoute(),
             'crud_show_route'  => $this->getShowRoute(),
+            'has_sub_menu'     => $this->hasSubMenu(),
+            'has_sup_menu'     => $this->hasSupMenu(),
+            'sup_menu'         => $this->hasSupMenu() ? $this->createSupMenu() : false,
         ];
     }
 
     protected function hasBreadcrumbs()
-    {
-        return !$this->hasSubmenu();
-    }
-
-    protected function hasSubmenu()
     {
         return false;
     }
 
     public function getBreadcrumbs()
     {
-        return $this->getParentBreadcrumbs() + ['base' => $this->getBaseBreadcrumb()];
-    }
-
-    public function getParentBreadcrumbs()
-    {
-        return [
-            'home' => [
-                'title' => 'Home',
-                'uri'   => $this->generateUrl('visy_admin_homepage')
-            ]
-        ];
-    }
-
-    public function generateUrl($route, $parameters = array(), $referenceType = UrlGeneratorInterface::ABSOLUTE_PATH)
-    {
+        $r = $this->getParentBreadcrumbs();
         if ($this->hasParent()) {
-            $parameters += $this->getParentUrlParameters();
+            $r += [$this->getParent()->getEntityName() => $this->getParent()->getBaseBreadcrumb()];
         }
-        return parent::generateUrl($route, $parameters, $referenceType);
-    }
+        $r += [$this->getEntityName() => $this->getBaseBreadcrumb()];
 
-    public function getParentUrlParameters()
-    {
-        $r = [];
-        if ($this->hasParent()) {
-            $r[$this->getParentRouteVariable()] = $this->parent->getEntityId();
-        }
         return $r;
     }
 
-    protected function getParentRouteVariable()
+    public function getEntityName()
     {
-        return strtolower($this->parent->getEntityName());
+        return 'undefined';
     }
 
     public function getBaseBreadcrumb()
@@ -153,21 +181,54 @@ abstract class AbstractCrudController extends AbstractController
         return $this->getRouteBase() . '_show';
     }
 
+    protected function hasSubMenu()
+    {
+        return false;
+    }
+
+    protected function hasSupMenu()
+    {
+        $r = $this->hasParent() && $this->getParent()->hasSubMenu();
+
+        return $r;
+    }
+
+    protected function createSupMenu()
+    {
+        if ($this->hasParent() && $this->getParent()->hasSubMenu()) {
+            return $this->getParent()->createSubMenu();
+        }
+    }
+
     public function getNewUrl(array $parameters = [])
     {
         $parameters += $this->getBaseParameters();
+
         return $this->generateUrl($this->getNewRoute(), $parameters);
     }
 
-    public function getCreateUrl(array $parameters = [])
+    public function generateUrl($route, $parameters = array(), $referenceType = UrlGeneratorInterface::ABSOLUTE_PATH)
     {
-        $parameters += $this->getBaseParameters();
-        return $this->generateUrl($this->getCreateRoute(), $parameters);
+        if ($this->hasParent()) {
+            $parameters += $this->getParentUrlParameters();
+        }
+
+        return parent::generateUrl($route, $parameters, $referenceType);
     }
 
-    public function getCreateRoute()
+    public function getParentUrlParameters()
     {
-        return $this->getRouteBase() . '_create';
+        $r = [];
+        if ($this->hasParent()) {
+            $r[$this->getParentRouteVariable()] = $this->parent->getEntityId();
+        }
+
+        return $r;
+    }
+
+    protected function getParentRouteVariable()
+    {
+        return strtolower($this->parent->getEntityName());
     }
 
     /**
@@ -175,20 +236,24 @@ abstract class AbstractCrudController extends AbstractController
      */
     public function createAction(Request $request)
     {
-        $this->initAction();
+        $this->_initAction('create', $this->_getMethodParameters(__FUNCTION__, func_get_args()));
 
+        $this->em = $this->getDoctrine()->getManager();
         $this->entity = $this->getNewEntity();
         $form = $this->createCreateForm($this->entity);
         $form->handleRequest($request);
 
         if ($form->isValid()) {
-            $em = $this->getDoctrine()->getManager();
 
             $this->touchEntity();
 
-            $em->persist($this->entity);
+            $this->em->persist($this->entity);
+            $this->em->flush();
 
-            $em->flush();
+            $this->get('session')->getFlashBag()->add(
+                'notice',
+                'Entity created!'
+            );
 
             return $this->redirect($this->getShowUrl());
         }
@@ -202,12 +267,23 @@ abstract class AbstractCrudController extends AbstractController
     public function getNewEntity()
     {
         $class = $this->getEntityClass();
-        return new $class;
+        $entity = new $class;
+
+        if ($this->hasParentEntity()) {
+            $entity->{'set' . ucfirst($this->parentEntity['name'])}($this->getParentEntity());
+        }
+
+        return $entity;
     }
 
     public function getEntityClass()
     {
         return $this->getDoctrine()->getManager()->getRepository($this->getEntity())->getClassName();
+    }
+
+    public function getParentEntity()
+    {
+        return $this->getDoctrine()->getRepository($this->parentEntity['class'])->find($this->getParentParameter());
     }
 
     /**
@@ -232,12 +308,20 @@ abstract class AbstractCrudController extends AbstractController
     public function getFormType()
     {
         $class = $this->getBundleNamespace . '\\Form\\' . $this->getEntityName() . 'Type';
+
         return new $class;
     }
 
-    public function getEntityName()
+    public function getCreateUrl(array $parameters = [])
     {
-        return 'undefined';
+        $parameters += $this->getBaseParameters();
+
+        return $this->generateUrl($this->getCreateRoute(), $parameters);
+    }
+
+    public function getCreateRoute()
+    {
+        return $this->getRouteBase() . '_create';
     }
 
     protected function touchEntity()
@@ -245,6 +329,7 @@ abstract class AbstractCrudController extends AbstractController
         if (method_exists($this->entity, 'touch')) {
             $this->entity->touch();
         }
+
         return $this;
     }
 
@@ -260,7 +345,22 @@ abstract class AbstractCrudController extends AbstractController
             $id = 'DUMMY';
         }
         $parameters['id'] = $id;
+
         return $this->generateUrl($this->getShowRoute(), $parameters);
+    }
+
+    public function getEntityId($entity = false)
+    {
+        if ($entity === false) {
+            $entity = $this->entity;
+        }
+        if ($entity) {
+            $class = $this->getEntityClass();
+            $meta = $this->getDoctrine()->getManager()->getClassMetadata($class);
+            $identifier = $meta->getSingleIdentifierFieldName();
+
+            return $entity->{'get' . ucfirst($identifier)}();
+        }
     }
 
     /**
@@ -268,14 +368,14 @@ abstract class AbstractCrudController extends AbstractController
      */
     public function showAction($id)
     {
-        $this->initAction();
+        $this->_initAction('show', $this->_getMethodParameters(__FUNCTION__, func_get_args()));
 
-        $em = $this->getDoctrine()->getManager();
+        $this->em = $this->getDoctrine()->getManager();
 
-        $this->entity = $em->getRepository($this->getEntity())->find($id);
+        $this->entity = $this->em->getRepository($this->getEntity())->find($id);
 
         if (!$this->entity) {
-            throw $this->createNotFoundException('Unable to find Project entity.');
+            throw $this->createNotFoundException('Unable to find entity.');
         }
 
         $deleteForm = $this->createDeleteForm($id);
@@ -302,6 +402,19 @@ abstract class AbstractCrudController extends AbstractController
             ->getForm();
     }
 
+    public function getDeleteUrl($entity = false, array $parameters = [])
+    {
+        $parameters += $this->getBaseParameters();
+        if ($entity === false) {
+            $entity = $this->entity;
+        }
+        if (is_object($entity)) {
+            $parameters['id'] = $this->getEntityId($entity);
+        }
+
+        return $this->generateUrl($this->getDeleteRoute(), $parameters);
+    }
+
     public function getDeleteRoute()
     {
         return $this->getRouteBase() . '_delete';
@@ -317,18 +430,11 @@ abstract class AbstractCrudController extends AbstractController
 
     public function getEntityTitle()
     {
-        return '#' . $this->getEntityId();
-    }
-
-    public function getEntityId($entity = false)
-    {
-        if ($entity === false) {
-            $entity = $this->entity;
+        if ($this->entityTitleProperty) {
+            return $this->entity->{'get' . ucfirst($this->entityTitleProperty)}();
         }
-        $class = $this->getEntityClass();
-        $meta = $this->getDoctrine()->getManager()->getClassMetadata($class);
-        $identifier = $meta->getSingleIdentifierFieldName();
-        return $entity->{'get' . $identifier}();
+
+        return '#' . $this->getEntityId();
     }
 
     /**
@@ -336,7 +442,7 @@ abstract class AbstractCrudController extends AbstractController
      */
     public function newAction()
     {
-        $this->initAction();
+        $this->_initAction('new', $this->_getMethodParameters(__FUNCTION__, func_get_args()));
 
         $this->entity = $this->getNewEntity();
         $form = $this->createCreateForm($this->entity);
@@ -352,11 +458,11 @@ abstract class AbstractCrudController extends AbstractController
      */
     public function editAction($id)
     {
-        $this->initAction();
+        $this->_initAction('edit', $this->_getMethodParameters(__FUNCTION__, func_get_args()));
 
-        $em = $this->getDoctrine()->getManager();
+        $this->em = $this->getDoctrine()->getManager();
 
-        $this->entity = $em->getRepository($this->getEntity())->find($id);
+        $this->entity = $this->em->getRepository($this->getEntity())->find($id);
 
         if (!$this->entity) {
             throw $this->createNotFoundException('Unable to find entity.');
@@ -365,13 +471,13 @@ abstract class AbstractCrudController extends AbstractController
         $editForm = $this->createEditForm($this->entity);
         $deleteForm = $this->createDeleteForm($id);
 
-        $submenu = $this->hasSubmenu() ? $this->createSubmenu() : false;
+        $subMenu = $this->hasSubMenu() ? $this->createSubMenu() : false;
 
         return [
             'entity'      => $this->entity,
             'edit_form'   => $editForm->createView(),
             'delete_form' => $deleteForm->createView(),
-            'submenu'     => $submenu
+            'sub_menu'    => $subMenu
         ] + $this->createDefaultScope() + $this->createEntityScope();
     }
 
@@ -403,9 +509,27 @@ abstract class AbstractCrudController extends AbstractController
         return $form;
     }
 
+    public function getUpdateUrl($entity = false, array $parameters = [])
+    {
+        $parameters += $this->getBaseParameters();
+        if ($entity === false) {
+            $entity = $this->entity;
+        }
+        if (is_object($entity)) {
+            $parameters['id'] = $this->getEntityId($entity);
+        }
+
+        return $this->generateUrl($this->getUpdateRoute(), $parameters);
+    }
+
     public function getUpdateRoute()
     {
         return $this->getRouteBase() . '_update';
+    }
+
+    protected function createSubMenu()
+    {
+        return (new MenuFactory())->createItem('SubMenu' . $this->getName());
     }
 
     /**
@@ -415,11 +539,11 @@ abstract class AbstractCrudController extends AbstractController
      */
     public function updateAction(Request $request, $id)
     {
-        $this->initAction();
+        $this->_initAction('update', $this->_getMethodParameters(__FUNCTION__, func_get_args()));
 
-        $em = $this->getDoctrine()->getManager();
+        $this->em = $this->getDoctrine()->getManager();
 
-        $this->entity = $em->getRepository($this->getEntity())->find($id);
+        $this->entity = $this->em->getRepository($this->getEntity())->find($id);
 
         if (!$this->entity) {
             throw $this->createNotFoundException('Unable to find entity.');
@@ -433,11 +557,11 @@ abstract class AbstractCrudController extends AbstractController
 
             $this->touchEntity();
 
-            $em->flush();
+            $this->em->flush();
 
             $this->get('session')->getFlashBag()->add(
                 'notice',
-                'Změny byly uloženy!'
+                'Changes saved!'
             );
 
             return $this->redirect($this->getEditUrl(false, ['id' => $id]));
@@ -459,31 +583,8 @@ abstract class AbstractCrudController extends AbstractController
         if (is_object($entity)) {
             $parameters['id'] = $this->getEntityId($entity);
         }
+
         return $this->generateUrl($this->getEditRoute(), $parameters);
-    }
-
-    public function getDeleteUrl($entity = false, array $parameters = [])
-    {
-        $parameters += $this->getBaseParameters();
-        if ($entity === false) {
-            $entity = $this->entity;
-        }
-        if (is_object($entity)) {
-            $parameters['id'] = $this->getEntityId($entity);
-        }
-        return $this->generateUrl($this->getDeleteRoute(), $parameters);
-    }
-
-    public function getUpdateUrl($entity = false, array $parameters = [])
-    {
-        $parameters += $this->getBaseParameters();
-        if ($entity === false) {
-            $entity = $this->entity;
-        }
-        if (is_object($entity)) {
-            $parameters['id'] = $this->getEntityId($entity);
-        }
-        return $this->generateUrl($this->getUpdateRoute(), $parameters);
     }
 
     /**
@@ -493,21 +594,21 @@ abstract class AbstractCrudController extends AbstractController
      */
     public function deleteAction(Request $request, $id)
     {
-        $this->initAction();
+        $this->_initAction('delete', $this->_getMethodParameters(__FUNCTION__, func_get_args()));
 
         $form = $this->createDeleteForm($id);
         $form->handleRequest($request);
 
         if ($form->isValid()) {
-            $em = $this->getDoctrine()->getManager();
-            $this->entity = $em->getRepository($this->getEntity())->find($id);
+            $this->em = $this->getDoctrine()->getManager();
+            $this->entity = $this->em->getRepository($this->getEntity())->find($id);
 
             if (!$this->entity) {
                 throw $this->createNotFoundException('Unable to find entity.');
             }
 
-            $em->remove($this->entity);
-            $em->flush();
+            $this->em->remove($this->entity);
+            $this->em->flush();
 
             $this->get('session')->getFlashBag()->add(
                 'notice',
@@ -516,6 +617,14 @@ abstract class AbstractCrudController extends AbstractController
         }
 
         return $this->redirect($this->generateUrl($this->getIndexRoute()));
+    }
+
+    public function initEntity($id)
+    {
+        $this->em = $this->getDoctrine()->getManager();
+        $this->entity = $this->em->getRepository($this->getEntity())->find($id);
+
+        return $this;
     }
 
 }

@@ -1,28 +1,28 @@
-.crud-has-submenu {
+.crud-has-sub-menu, .crud-has-sup-menu {
 
     #menu ul li.current:after {
-        border-right-color: $crud-submenu-background-color;
+        border-right-color: $crud-sub-menu-background-color;
     }
 
 
     #toolbar {
-        margin-left: $crud-submenu-width;
+        margin-left: $crud-sub-menu-width;
     }
 
     #main {
-        padding-left: $crud-submenu-width;
+        padding-left: $crud-sub-menu-width;
     }
 
 
 }
 
-#crud-submenu {
+.crud-sub-menu, .crud-sup-menu {
     position: absolute;
     top: $header-height;
     left: 0; //$nav-width
     bottom: 0;
-    width: $crud-submenu-width;
-    background: $crud-submenu-background-color;
+    width: $crud-sub-menu-width;
+    background: $crud-sub-menu-background-color;
 
     ul {
         list-style: none;
@@ -35,7 +35,7 @@
             position: relative;
             margin: 0;
             padding: 1em $nav-space-v;
-            //border-bottom: 1px dotted darken($crud-submenu-background-color, 15%);
+            //border-bottom: 1px dotted darken($crud-sub-menu-background-color, 15%);
 
             &.current {
                 background-color: $brand-primary;
@@ -74,6 +74,6 @@
 
 }
 
-.has-breadcrumbs #crud-submenu {
+.has-breadcrumbs .crud-sub-menu, .has-breadcrumbs .crud-sup-menu {
     top: $header-height + $breadcrumbs-height;
 }
